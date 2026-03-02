@@ -5,8 +5,14 @@ import java.util.HashMap;
 public class LetterCryptogram extends Cryptogram<Character> {
 
     public LetterCryptogram() {
-        cryptogramAlphabet = new HashMap<Character, Character>();
+        cryptogramAlphabet = new HashMap<>();
+        encryptionKey = new HashMap<>();
+
+        loadPhrase();
+        encrypted = new Character[phrase.length()];
+
         generateMapping();
+        encryptPhrase();
     }
 
     @Override
@@ -38,10 +44,23 @@ public class LetterCryptogram extends Cryptogram<Character> {
             }
         }
 
+        // Add spaces to ensure they always map to each other
+        alphabet.add(' ');
+        encrypted.add(' ');
+
         // Store mapping of encrypted -> alphabet
         for (int i = 0; i < alphabet.size(); i++) {
             cryptogramAlphabet.put(encrypted.get(i), alphabet.get(i));
+            encryptionKey.put(alphabet.get(i), encrypted.get(i));
         }
+    }
+
+    public String getEncryptedPhrase() {
+        StringBuilder encryptedPhrase = new StringBuilder();
+        for (int i = 0; i < encrypted.length; i++) {
+            encryptedPhrase.append(encrypted[i]);
+        }
+        return encryptedPhrase.toString();
     }
 
 }
