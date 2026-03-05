@@ -4,14 +4,14 @@ import java.util.HashMap;
 
 public class NumberCryptogram extends Cryptogram<Integer> {
 
-    public NumberCryptogram() {
+    public NumberCryptogram(String file) {
         cryptogramAlphabet = new HashMap<>();
         encryptionKey = new HashMap<>();
 
-        loadPhrase();
-        encrypted = new Integer[phrase.length()];
-
         generateMapping();
+        loadPhrase(file);
+
+        encrypted = new Integer[phrase.length()];
         encryptPhrase();
     }
 

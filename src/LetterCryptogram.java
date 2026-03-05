@@ -4,14 +4,14 @@ import java.util.HashMap;
 
 public class LetterCryptogram extends Cryptogram<Character> {
 
-    public LetterCryptogram() {
+    public LetterCryptogram(String file) {
         cryptogramAlphabet = new HashMap<>();
         encryptionKey = new HashMap<>();
 
-        loadPhrase();
-        encrypted = new Character[phrase.length()];
-
         generateMapping();
+        loadPhrase(file);
+
+        encrypted = new Character[phrase.length()];
         encryptPhrase();
     }
 
