@@ -64,6 +64,11 @@ public class Game {
         playergameMapping.remove(encryptedChar);
     }
 
+    // method overload to handle int input
+    public void undoLetter(int encryptedChar) {
+        playergameMapping.remove(encryptedChar);
+    }
+
     // should probably be changed to return the solution when the UI is setup
     public void showSolution() {
         System.out.println(currentCryptogram.getPhrase());

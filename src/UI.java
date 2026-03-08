@@ -128,7 +128,7 @@ public class UI extends JFrame {
                         int encryptedNum = Integer.parseInt(token);
 
                         if (text.isEmpty()) {
-                            game.undoLetter((char) encryptedNum);
+                            game.undoLetter(encryptedNum);
                         } else {
                             char guess = text.charAt(0);
                             game.enterLetter(encryptedNum, guess);
