@@ -43,13 +43,13 @@ public class Game {
     public void generateCryptogram() {
         // This method might be redundant since when a Cryptogram object is made it generates a Cryptogram itself
     }
-
-    public void enterLetter(Object encryptedChar, char guessedChar) {
-        encryptedChar = Character.toUpperCase((Character)encryptedChar);
-        guessedChar = Character.toUpperCase(guessedChar);
-        playergameMapping.put(encryptedChar, guessedChar);
+    // Method to enter a guessed letter for an encrypted character
+    public void enterLetter(Object encryptedChar, char guessedChar) { 
+        encryptedChar = Character.toUpperCase((Character)encryptedChar);//Converts encrypted character to uppercase to match with guess
+        guessedChar = Character.toUpperCase(guessedChar);//Converts guessed character to uppercase to match with encrypted char
+        playergameMapping.put(encryptedChar, guessedChar);//Maps encrypted char to guessed char 
     }
-
+    // Method to undo guessed letter for specified encrypted char
     public void undoLetter(char encryptedChar) {
         encryptedChar = Character.toUpperCase(encryptedChar);
         playergameMapping.remove(encryptedChar);
