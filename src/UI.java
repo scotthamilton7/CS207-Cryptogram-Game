@@ -23,8 +23,10 @@ public class UI extends JFrame {
     private JPanel guessRow; // Panel for guess boxes
     private JPanel encryptedRow; // Panel for encrypted characters
 
+    private String type = "Number";
+
     public UI() {
-        this.game = new Game(new Player(), "Letter"); // Hard coded for now
+        this.game = new Game(new Player(), type); // Hard coded for now
         this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
 
         buildFrame();
@@ -51,11 +53,19 @@ public class UI extends JFrame {
         encryptedRow = new JPanel();
         int length = encrypted.length();
 
-        for (int i = 0; i < length; i++) {
-            char character = encrypted.charAt(i);
-            JLabel label = new JLabel(String.valueOf(character));
+        if (type.equals("Number")) {
+            for (String x : encrypted.split(" ")) {
+                JLabel label = new JLabel(x);
+                encryptedRow.add(label);
+            }
+        }
+        else if  (type.equals("Letter")) {
+            for (int i = 0; i < length; i++) {
+                char character = encrypted.charAt(i);
+                JLabel label = new JLabel(String.valueOf(character));
 
-            encryptedRow.add(label);
+                encryptedRow.add(label);
+            }
         }
         gamePanel.add(encryptedRow);
     }
@@ -66,11 +76,35 @@ public class UI extends JFrame {
         int length = encrypted.length();
         guessFields = new JTextField[length];
 
-        for (int i = 0; i < length; i++) {
-            JTextField field = new JTextField(1);
-            guessRow.add(field);
-            guessFields[i] = field;
+        if (type.equals("Number")) {
+            int i = 0;
+            for (String x : encrypted.split(" ")) {
+                if (!x.equals("")) {
+                    JTextField field = new JTextField(1);
+                    guessRow.add(field);
+                    guessFields[i++] = field;
+                }
+                else {
+                    JLabel field = new JLabel(" ");
+                    guessRow.add(field);
+                }
+            }
         }
+
+        else if  (type.equals("Letter")) {
+            for (int i = 0; i < length; i++) {
+                if (encrypted.charAt(i) != ' ') {
+                    JTextField field = new JTextField(1);
+                    guessRow.add(field);
+                    guessFields[i] = field;
+                }
+                else {
+                    JLabel field = new JLabel("   ");
+                    guessRow.add(field);
+                }
+            }
+        }
+
         gamePanel.add(guessRow);
     }
 
