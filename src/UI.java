@@ -18,6 +18,7 @@ public class UI extends JFrame {
     private JTextField[] guessFields; // Boxes to display guesses
 
     private String encrypted; // the encrypted string for the current game
+    private String[] encryptedTokens;
 
     private JPanel gamePanel; // Combined Panel for the whole game
     private JPanel guessRow; // Panel for guess boxes
@@ -28,6 +29,7 @@ public class UI extends JFrame {
     public UI() {
         this.game = new Game(new Player(), type); // Hard coded for now
         this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
+        this.encryptedTokens = new String[encrypted.length()];
 
         buildFrame();
         buildEncryptedRow();
@@ -80,6 +82,7 @@ public class UI extends JFrame {
             int i = 0;
             for (String x : encrypted.split(" ")) {
                 if (!x.equals("")) {
+                    encryptedTokens[i] = x;
                     JTextField field = new JTextField(1);
                     guessRow.add(field);
                     guessFields[i++] = field;
@@ -119,40 +122,85 @@ public class UI extends JFrame {
                 public void keyReleased(KeyEvent e) {
                     JTextField field = guessFields[index];
                     String text = field.getText().toUpperCase();
-                    char encryptedChar = encrypted.charAt(index);
 
-                    // if event is triggered and box is empty, something must have been removed, else, something must have been added
-                    if (text.isEmpty()) {
-                        //game.getPlayergameMapping().remove(encryptedChar);
-                        game.undoLetter(encryptedChar);
-                    } else {
-                        char guess = text.charAt(0);
-                        game.enterLetter(encryptedChar, guess);
+                    if (type.equals("Number")) {
+                        String token = encryptedTokens[index];
+                        int encryptedNum = Integer.parseInt(token);
+
+                        if (text.isEmpty()) {
+                            game.undoLetter((char) encryptedNum);
+                        } else {
+                            char guess = text.charAt(0);
+                            game.enterLetter(encryptedNum, guess);
+                        }
                     }
+
+                    else if (type.equals("Letter")) {
+                        char encryptedChar = encrypted.charAt(index);
+                        // if event is triggered and box is empty, something must have been removed, else, something must have been added
+                        if (text.isEmpty()) {
+                            //game.getPlayergameMapping().remove(encryptedChar);
+                            game.undoLetter(encryptedChar);
+                        } else {
+                            char guess = text.charAt(0);
+                            game.enterLetter(encryptedChar, guess);
+                        }
+                    }
+
                     refreshBoard();
                 }
             });
         }
     }
+
     // reloads the boxes with the updated game mapping
     public void refreshBoard() {
         Map<Object, Character> guesses = game.getPlayergameMapping();
 
-        for (int i = 0; i < guessFields.length; i++) {
-            if (guessFields[i] == null) continue;
-
-            char encryptedChar = encrypted.charAt(i);
-            Character guess = guesses.get(encryptedChar);
-
-            //sets everything to blank that isnt in game mapping
-            if (guess == null) {
-                if (!guessFields[i].getText().isEmpty()) {
-                    guessFields[i].setText("");
+        if (type.equals("Number")) {
+            int i = 0;
+            for (String x : encrypted.split(" ")) {
+                if (x.equals("") || x.equals(" ")) {
+                    continue;
                 }
-            } else {
-                String guessStr = String.valueOf(guess);
-                if (!guessFields[i].getText().equals(guessStr)) {
-                    guessFields[i].setText(guessStr);
+                if (guessFields[i] == null) {
+                    i++;
+                    continue;
+                }
+                Character guess = guesses.get(Integer.valueOf(x));
+
+                //sets everything to blank that isnt in game mapping
+                if (guess == null) {
+                    if (!guessFields[i].getText().isEmpty()) {
+                        guessFields[i].setText("");
+                    }
+                } else {
+                    String guessStr = String.valueOf(guess);
+                    if (!guessFields[i].getText().equals(guessStr)) {
+                        guessFields[i].setText(guessStr);
+                    }
+                }
+
+                i++;
+            }
+        }
+        else if  (type.equals("Letter")) {
+            for (int i = 0; i < guessFields.length; i++) {
+                if (guessFields[i] == null) continue;
+
+                char encryptedChar = encrypted.charAt(i);
+                Character guess = guesses.get(encryptedChar);
+
+                //sets everything to blank that isnt in game mapping
+                if (guess == null) {
+                    if (!guessFields[i].getText().isEmpty()) {
+                        guessFields[i].setText("");
+                    }
+                } else {
+                    String guessStr = String.valueOf(guess);
+                    if (!guessFields[i].getText().equals(guessStr)) {
+                        guessFields[i].setText(guessStr);
+                    }
                 }
             }
         }

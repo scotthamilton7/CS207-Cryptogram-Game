@@ -45,8 +45,17 @@ public class Game {
     }
     // Method to enter a guessed letter for an encrypted character
     public void enterLetter(Object encryptedChar, char guessedChar) { 
-        encryptedChar = Character.toUpperCase((Character)encryptedChar);//Converts encrypted character to uppercase to match with guess
-        guessedChar = Character.toUpperCase(guessedChar);//Converts guessed character to uppercase to match with encrypted char
+        try {
+            if (Character.isLetter((Character) encryptedChar)) {
+                encryptedChar = Character.toUpperCase((Character)encryptedChar);//Converts encrypted character to uppercase to match with guess
+            }
+            if (Character.isLetter(guessedChar)) {
+                guessedChar = Character.toUpperCase(guessedChar);//Converts guessed character to uppercase to match with encrypted char
+            }
+        }
+        catch (Exception e) {
+            // Integer passed in
+        }
         playergameMapping.put(encryptedChar, guessedChar);//Maps encrypted char to guessed char 
     }
     // Method to undo guessed letter for specified encrypted char
