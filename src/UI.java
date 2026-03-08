@@ -204,9 +204,26 @@ public class UI extends JFrame {
                 }
             }
         }
+        checkWin();
     }
 
+    // Method to compare guesses to actual answer to check if player won
+    // might have problems with number cryptogram
     private void checkWin() {
         // Check if the player won, not sure what to do after win?
+        String SolutionPhrase = game.getCurrentCryptogram().getPhrase(); // Stores unencrypted phrase
+        String EncryptedPhrase = game.getCurrentCryptogram().getEncryptedPhrase(); // Stores encrypted phrase
+        Map<Object, Character> guesses = game.getPlayergameMapping();
+
+        // Sets guesses to answer and goes until player gets correct answer
+        for (int i = 0; i < SolutionPhrase.length(); i++){
+            char answerChar = SolutionPhrase.charAt(i);
+            char encryptChar = EncryptedPhrase.charAt(i);
+            Character guess = guesses.get(encryptChar);
+            if (guess == null || guess != answerChar) {
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(this, "You win!"); // displays win message
     }
 }
