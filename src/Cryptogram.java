@@ -23,7 +23,7 @@ public abstract class Cryptogram<T> {
     public abstract char getPlainLetter(T encrypted);
 
     public void loadPhrase(String file) {
-        try (Scanner reader = new Scanner(new File("phrases.txt"))) {
+        try (Scanner reader = new Scanner(new File(file))) {
             // Load phrases from file
             ArrayList<String> phrases = new ArrayList<>();
             while (reader.hasNextLine()) {
