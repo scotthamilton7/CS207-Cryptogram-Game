@@ -200,7 +200,7 @@ public class UI extends JFrame {
     }
 
     // Method to compare guesses to actual answer to check if player won and display the win message
-    public void checkWin() {
+    private void checkWin() {
         // Check if the player won, not sure what to do after win?
         String SolutionPhrase = game.getCurrentCryptogram().getPhrase(); // Stores unencrypted phrase
         String EncryptedPhrase = game.getCurrentCryptogram().getEncryptedPhrase(); // Stores encrypted phrase
