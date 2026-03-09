@@ -4,14 +4,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Map;
 
-/**
- * Current Issues -
- * Needs to skip spaces (Not make a box)
- * Needs to be able to check if the player won (shouldnt be hard)
- * UI should probably look alot better
- * Needs Hint, Show solution buttons etc (also shouldnt be too hard)
- * Also still needs reworked abit for number cryptograms (currently makes too many boxes when given a double digit int)
- */
 public class UI extends JFrame {
     private Game game; // current game being played
 
@@ -24,7 +16,7 @@ public class UI extends JFrame {
     private JPanel guessRow; // Panel for guess boxes
     private JPanel encryptedRow; // Panel for encrypted characters
 
-    private String type = "Number";
+    private String type = "Letter";
 
     public UI() {
         this.game = new Game(new Player(), type); // Hard coded for now
