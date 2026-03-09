@@ -199,21 +199,58 @@ public class UI extends JFrame {
         checkWin();
     }
 
-    // Method to compare guesses to actual answer to check if player won
-    // might have problems with number cryptogram
-    private void checkWin() {
+    // Method to compare guesses to actual answer to check if player won and display the win message
+    public void checkWin() {
         // Check if the player won, not sure what to do after win?
         String SolutionPhrase = game.getCurrentCryptogram().getPhrase(); // Stores unencrypted phrase
         String EncryptedPhrase = game.getCurrentCryptogram().getEncryptedPhrase(); // Stores encrypted phrase
         Map<Object, Character> guesses = game.getPlayergameMapping();
 
-        // Sets guesses to answer and goes until player gets correct answer
-        for (int i = 0; i < SolutionPhrase.length(); i++){
-            char answerChar = SolutionPhrase.charAt(i);
-            char encryptChar = EncryptedPhrase.charAt(i);
-            Character guess = guesses.get(encryptChar);
-            if (guess == null || guess != answerChar) {
-                return;
+        if (game.getCryptType().equals("Number")) {
+            String[] tokens = EncryptedPhrase.trim().split(" ");
+            int phraseIndex = 0;
+            for (int i = 0; i < tokens.length; i++){
+                String currentToken = tokens[i];
+                if (currentToken.equals("")) continue; //skips the empty tokens
+
+                int numEncrypt;
+                try{
+                    numEncrypt = Integer.parseInt(currentToken);
+                } catch (NumberFormatException e ){
+                    continue; // skips if not a number
+                }
+
+                // this is used to move past empty spaces in phrase
+                while (phraseIndex < SolutionPhrase.length() && SolutionPhrase.charAt(phraseIndex) == ' ') {
+                    phraseIndex++;
+                }
+
+
+                Character guess = guesses.get(numEncrypt);
+                //change to uppercase to allow for comparison to identify if correct or not
+                if (guess == null || Character.toUpperCase(guess) != Character.toUpperCase(SolutionPhrase.charAt(phraseIndex))) {
+                    return; // not correct guess yet
+                }
+                phraseIndex++;
+            }
+            // Sets guesses to answer and goes until player gets correct answer
+        }else if (game.getCryptType().equals("Letter")) {
+            String removeSpacePhrase = EncryptedPhrase.replace(" ", ""); // removes the spaces in phrase
+            int phraseIndex = 0;
+            for (int i = 0; i < removeSpacePhrase.length(); i++) {
+                char encryptChar = removeSpacePhrase.charAt(i);
+                Character guess = guesses.get(encryptChar);
+
+                // this is used to move past empty spaces in phrase
+                while (phraseIndex < SolutionPhrase.length() && SolutionPhrase.charAt(phraseIndex) == ' ') {
+                    phraseIndex++;
+                }
+
+                //change to uppercase to allow for comparison to identify if correct or not
+                if (guess == null || Character.toUpperCase(guess) != Character.toUpperCase(SolutionPhrase.charAt(phraseIndex))) {
+                    return; // not correct guess yet
+                }
+                phraseIndex++;
             }
         }
         JOptionPane.showMessageDialog(this, "You win!"); // displays win message
