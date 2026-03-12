@@ -16,7 +16,7 @@ public class Player {
     }
 
     public void updateUsername(String username) { this.username = username; }
-
+    // This will have the accuracy calculation
     public void updateAccuracy() {}
 
     public void incrementCryptogramsPlayed(){ this.cryptogramsPlayed++; }
@@ -34,4 +34,12 @@ public class Player {
     public int getNumCryptogramsPlayed() { return this.cryptogramsPlayed; }
 
     public int getTotalGuesses() { return this.totalGuesses; }
+
+    public void setAccuracy(double accuracy) { this.accuracy = accuracy; }
+
+    public void setTotalGuesses(int totalGuesses) { this.totalGuesses = totalGuesses; }
+
+    public void setCryptogramsPlayed(int cryptogramsPlayed) { this.cryptogramsPlayed = cryptogramsPlayed; }
+
+    public void setCryptogramsCompleted(int cryptogramsCompleted) { this.cryptogramsCompleted = cryptogramsCompleted; }
 }

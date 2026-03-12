@@ -1,6 +1,8 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class Players {
         }
     }
 
-    // Method to save all player data to CSV file
+    // Method to save all player data to CSV file (might need to add game data to this)
     public void savePlayers() {
         try {
             FileWriter fw = new FileWriter(playersFile);
@@ -42,6 +44,39 @@ public class Players {
         } catch (IOException e) {
             // Print error message if write operation fails
             System.out.println("Error saving player data: " + e.getMessage());
+        }
+    }
+
+    // Currently loads just player data, will need to be modified (and potentially moved) to load game data
+    public void loadPlayers() {
+        List<String> lines;
+        try {
+            lines = Files.readAllLines(Path.of(playersFile));
+        } catch (IOException e) {
+            System.out.println("Player data file not found");
+            return;
+        }
+        if (lines.isEmpty()) return;
+        for (String line : lines) {
+            if (line.trim().isEmpty()) continue;
+            String[] parts = line.split(",");
+            if (parts.length < 5) continue;
+            String playerName = parts[0];
+            double accuracy = Double.parseDouble(parts[1]);
+            int totalGuesses = Integer.parseInt(parts[2]);
+            int numCryptogramsPlayed = Integer.parseInt(parts[3]);
+            int numCryptogramsCompleted = Integer.parseInt(parts[4]);
+
+
+            Player player = new Player();
+            player.updateUsername(playerName);
+            player.setAccuracy(accuracy);
+            player.setTotalGuesses(totalGuesses);
+            player.setCryptogramsPlayed(numCryptogramsPlayed);
+            player.setCryptogramsCompleted(numCryptogramsCompleted);
+
+            addPlayer(player);
+
         }
     }
 
@@ -81,5 +116,7 @@ public class Players {
         }
         return cryptogramsCompletedData;
     }
+
+    public int getSize() { return allPlayers.size(); }
 
 }
