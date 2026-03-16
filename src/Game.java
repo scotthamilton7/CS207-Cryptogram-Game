@@ -33,8 +33,10 @@ public class Game {
         } else {
             //creates letter cryptogram by default, not sure if this is what we want
             currentCryptogram = new LetterCryptogram(phrasesFile);
-
         }
+
+        // New game created
+        currentPlayer.incrementCryptogramsPlayed();
     }
 
     public Game(Player p) {
@@ -44,6 +46,7 @@ public class Game {
     public void generateCryptogram() {
         // This method might be redundant since when a Cryptogram object is made it generates a Cryptogram itself
     }
+
     // Method to enter a guessed letter for an encrypted character
     public void enterLetter(Object encryptedChar, char guessedChar) { 
         try {
@@ -57,8 +60,14 @@ public class Game {
         catch (Exception e) {
             // Integer passed in
         }
-        playergameMapping.put(encryptedChar, guessedChar);//Maps encrypted char to guessed char 
+
+        //Maps encrypted char to guessed char
+        playergameMapping.put(encryptedChar, guessedChar);
+
+        // Increment guesses made
+        currentPlayer.incrementTotalGuesses();
     }
+
     // Method to undo guessed letter for specified encrypted char
     public void undoLetter(char encryptedChar) {
         encryptedChar = Character.toUpperCase(encryptedChar);
@@ -142,6 +151,7 @@ public class Game {
         }
 
         // Player has won
+        currentPlayer.incrementCryptogramsCompleted();
         return true;
     }
 
