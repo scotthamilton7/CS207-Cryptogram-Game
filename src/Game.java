@@ -5,8 +5,6 @@ import java.util.Map;
 
 /**
  *  Current Issues:
- *  Seems to work fine for Letter Cryptograms, however Number Cryptograms dont work -
- *  Because when mapping a guess, the encrypted character just takes the first number (E.g from 14 it just takes 1)
  *
  */
 
@@ -20,6 +18,7 @@ public class Game {
 
     // could maybe move this to global scope
     private String phrasesFile = "phrases.txt";
+    private String gameDataFile = "gameData.csv";
 
     public Game(Player p, String cryptType) {
         this.currentPlayer = p;
@@ -95,6 +94,16 @@ public class Game {
     public void setPlayergameMapping(Map<Object, Character> p) { playergameMapping = p; }
     public void setCryptType(String c) { cryptType = c; }
     public void setCurrentCryptogram(Cryptogram c) { currentCryptogram = c; }
+
+    // save current game, save it in place if user has already got a game saved
+    public void saveGame(String username) {
+
+    }
+
+    // load game by user playing it
+    public void loadGame(String username) {
+
+    }
 
     public boolean hasWon() {
         // Check if the player won, not sure what to do after win?
