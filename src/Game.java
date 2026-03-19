@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,8 +33,10 @@ public class Game {
         } else {
             //creates letter cryptogram by default, not sure if this is what we want
             currentCryptogram = new LetterCryptogram(phrasesFile);
-
         }
+
+        // New game created
+        currentPlayer.incrementCryptogramsPlayed();
     }
 
     public Game(Player p) {
@@ -43,6 +46,7 @@ public class Game {
     public void generateCryptogram() {
         // This method might be redundant since when a Cryptogram object is made it generates a Cryptogram itself
     }
+
     // Method to enter a guessed letter for an encrypted character
     public void enterLetter(Object encryptedChar, char guessedChar) { 
         try {
@@ -56,8 +60,14 @@ public class Game {
         catch (Exception e) {
             // Integer passed in
         }
-        playergameMapping.put(encryptedChar, guessedChar);//Maps encrypted char to guessed char 
+
+        //Maps encrypted char to guessed char
+        playergameMapping.put(encryptedChar, guessedChar);
+
+        // Increment guesses made
+        currentPlayer.incrementTotalGuesses();
     }
+
     // Method to undo guessed letter for specified encrypted char
     public void undoLetter(char encryptedChar) {
         encryptedChar = Character.toUpperCase(encryptedChar);
@@ -85,6 +95,65 @@ public class Game {
     public void setPlayergameMapping(Map<Object, Character> p) { playergameMapping = p; }
     public void setCryptType(String c) { cryptType = c; }
     public void setCurrentCryptogram(Cryptogram c) { currentCryptogram = c; }
+
+    public boolean hasWon() {
+        // Check if the player won, not sure what to do after win?
+        String SolutionPhrase = getCurrentCryptogram().getPhrase(); // Stores unencrypted phrase
+        String EncryptedPhrase = getCurrentCryptogram().getEncryptedPhrase(); // Stores encrypted phrase
+        Map<Object, Character> guesses = getPlayergameMapping();
+
+        if (getCryptType().equals("Number")) {
+            String[] tokens = EncryptedPhrase.trim().split(" ");
+            int phraseIndex = 0;
+            for (int i = 0; i < tokens.length; i++){
+                String currentToken = tokens[i];
+                if (currentToken.equals("")) continue; //skips the empty tokens
+
+                int numEncrypt;
+                try{
+                    numEncrypt = Integer.parseInt(currentToken);
+                } catch (NumberFormatException e ){
+                    continue; // skips if not a number
+                }
+
+                // this is used to move past empty spaces in phrase
+                while (phraseIndex < SolutionPhrase.length() && SolutionPhrase.charAt(phraseIndex) == ' ') {
+                    phraseIndex++;
+                }
+
+
+                Character guess = guesses.get(numEncrypt);
+                //change to uppercase to allow for comparison to identify if correct or not
+                if (guess == null || Character.toUpperCase(guess) != Character.toUpperCase(SolutionPhrase.charAt(phraseIndex))) {
+                    return false; // not correct guess yet
+                }
+                phraseIndex++;
+            }
+            // Sets guesses to answer and goes until player gets correct answer
+        }else if (getCryptType().equals("Letter")) {
+            String removeSpacePhrase = EncryptedPhrase.replace(" ", ""); // removes the spaces in phrase
+            int phraseIndex = 0;
+            for (int i = 0; i < removeSpacePhrase.length(); i++) {
+                char encryptChar = removeSpacePhrase.charAt(i);
+                Character guess = guesses.get(encryptChar);
+
+                // this is used to move past empty spaces in phrase
+                while (phraseIndex < SolutionPhrase.length() && SolutionPhrase.charAt(phraseIndex) == ' ') {
+                    phraseIndex++;
+                }
+
+                //change to uppercase to allow for comparison to identify if correct or not
+                if (guess == null || Character.toUpperCase(guess) != Character.toUpperCase(SolutionPhrase.charAt(phraseIndex))) {
+                    return false; // not correct guess yet
+                }
+                phraseIndex++;
+            }
+        }
+
+        // Player has won
+        currentPlayer.incrementCryptogramsCompleted();
+        return true;
+    }
 
 
 }
