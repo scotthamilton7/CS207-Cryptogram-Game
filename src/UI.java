@@ -19,14 +19,25 @@ public class UI extends JFrame {
     private String type = "Letter";
 
     public UI() {
-        this.game = new Game(new Player(), type); // Hard coded for now
-        this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
-        this.encryptedTokens = new String[encrypted.length()];
-
+        initGame();
         buildFrame();
         buildEncryptedRow();
         buildGuessRow();
         addListeners();
+    }
+
+    private void initGame() {
+        game = new Game(new Player());
+        game.loadGame();
+        refreshBoard(); // Refreshes board if game got loaded in, if not just refreshes blank board
+
+        // now only makes a new game if one wasnt loaded
+        if (game == null) {
+            this.game = new Game(new Player(), type); // Hard coded for now
+            game.getCurrentPlayer().updateUsername("testPlayer"); // Also hard coded, to test game saving
+        }
+        this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
+        this.encryptedTokens = new String[encrypted.length()];
     }
 
     private void buildFrame() {
@@ -147,6 +158,7 @@ public class UI extends JFrame {
 
     // reloads the boxes with the updated game mapping
     public void refreshBoard() {
+        if (guessFields == null) return;
         Map<Object, Character> guesses = game.getPlayergameMapping();
 
         if (type.equals("Number")) {
@@ -204,6 +216,7 @@ public class UI extends JFrame {
         if (game.hasWon()) {
             // displays win message
             JOptionPane.showMessageDialog(this, "You win!");
+            game.saveGame();
         }
     }
 }
