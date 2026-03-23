@@ -32,3 +32,6 @@ bin/
 
 ### Player Data File ###
 playerData.csv
+
+### Game Data File ###
+gameData.csv

@@ -1,12 +1,15 @@
 import javax.swing.*;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  *  Current Issues:
- *  Seems to work fine for Letter Cryptograms, however Number Cryptograms dont work -
- *  Because when mapping a guess, the encrypted character just takes the first number (E.g from 14 it just takes 1)
  *
  */
 
@@ -20,6 +23,7 @@ public class Game {
 
     // could maybe move this to global scope
     private String phrasesFile = "phrases.txt";
+    private String gameDataFile = "src/gameData.csv";
 
     public Game(Player p, String cryptType) {
         this.currentPlayer = p;
@@ -40,11 +44,12 @@ public class Game {
     }
 
     public Game(Player p) {
-        // Still not sure what this should do?
+        this.currentPlayer = p;
+        this.playergameMapping = new HashMap<Object, Character>();
     }
 
     public void generateCryptogram() {
-        // This method might be redundant since when a Cryptogram object is made it generates a Cryptogram itself
+
     }
 
     // Method to enter a guessed letter for an encrypted character
@@ -96,8 +101,51 @@ public class Game {
     public void setCryptType(String c) { cryptType = c; }
     public void setCurrentCryptogram(Cryptogram c) { currentCryptogram = c; }
 
+    // save current game, save it in place if currentPlayer has already got a game saved
+    // saves game data in format "{username},{unencryptedphrase},{encryptedLetter}-{guessedletter} ...
+    // should maybe include full encrypted phrase aswell, easy to add
+    public void saveGame() {
+        try {
+            FileWriter fw = new FileWriter(gameDataFile);
+            //clearPlayerData();
+
+            fw.write(currentPlayer.getUsername() + ",");
+            fw.write(currentCryptogram.getPhrase() + ",");
+            for (Map.Entry<Object, Character> entry : playergameMapping.entrySet()) {
+                fw.write(entry.getKey().toString() + "-" + entry.getValue().toString() + " ");
+            }
+            fw.write(",\n");
+            fw.close();
+        } catch (IOException e) {
+            // Print error message if write operation fails
+            System.out.println("Error saving game data: " + e.getMessage());
+        }
+    }
+
+    // load game by user playing it (by currentPlayer)
+    public void loadGame() {
+        String username = currentPlayer.getUsername();
+        List<String> lines;
+        try {
+            lines = Files.readAllLines(Path.of(gameDataFile));
+        } catch (IOException e) {
+            System.out.println("Game data file not found");
+            return;
+        }
+        // Splits each line in the saved format, only gets data for matching username
+        for (String line : lines) {
+            String[] parts = line.split(",");
+            if (parts[0].equals(username)) {
+                String[] mappingParts = parts[1].split(" ");
+                for (String mappingPart : mappingParts) {
+                    String[] gameMappingParts = mappingPart.split("-");
+                    playergameMapping.put(gameMappingParts[0].charAt(0), gameMappingParts[1].charAt(0));
+                }
+            }
+        }
+    }
+
     public boolean hasWon() {
-        // Check if the player won, not sure what to do after win?
         String SolutionPhrase = getCurrentCryptogram().getPhrase(); // Stores unencrypted phrase
         String EncryptedPhrase = getCurrentCryptogram().getEncryptedPhrase(); // Stores encrypted phrase
         Map<Object, Character> guesses = getPlayergameMapping();
