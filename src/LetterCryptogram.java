@@ -20,10 +20,12 @@ public class LetterCryptogram extends Cryptogram<Character> {
     // Overloaded constructor to restore game
     public LetterCryptogram(HashMap<Character, Character> cryptogramAlphabet,
                             HashMap<Character, Character> encryptionKey,
+                            String phrase,
                             Character[] encrypted) {
 
         this.cryptogramAlphabet = cryptogramAlphabet;
         this.encryptionKey = encryptionKey;
+        this.phrase = phrase;
         this.encrypted = encrypted;
     }
 

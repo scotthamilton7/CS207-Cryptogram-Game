@@ -24,21 +24,27 @@ public class UI extends JFrame {
         buildEncryptedRow();
         buildGuessRow();
         addListeners();
+
+        setVisible(true);
+        refreshBoard();
     }
 
     private void initGame() {
-        game = new Game(new Player());
-        game.getCurrentPlayer().updateUsername("testPlayer"); // Also hard coded, to test game saving
-        game.loadGame();
-        refreshBoard(); // Refreshes board if game got loaded in, if not just refreshes blank board
-
-        // now only makes a new game if one wasnt loaded
-        if (game == null) {
-            this.game = new Game(new Player(), type); // Hard coded for now
-            game.getCurrentPlayer().updateUsername("testPlayer"); // Also hard coded, to test game saving
+        try {
+            game = new Game(new Player());
+            game.getCurrentPlayer().updateUsername("player name5"); // Also hard coded, to test game saving
+            game.loadGame();
+            refreshBoard(); // Refreshes board if game got loaded in, if not just refreshes blank board
+            this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
+            this.encryptedTokens = new String[encrypted.length()];
         }
-        this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
-        this.encryptedTokens = new String[encrypted.length()];
+        catch (Exception e) {
+            // Null pointer exception is game not loaded
+            this.game = new Game(new Player(), type); // Hard coded for now
+            game.getCurrentPlayer().updateUsername("player name5"); // Also hard coded, to test game saving
+            this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
+            this.encryptedTokens = new String[encrypted.length()];
+        }
     }
 
     private void buildFrame() {

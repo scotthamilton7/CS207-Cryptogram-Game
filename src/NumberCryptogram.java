@@ -17,10 +17,12 @@ public class NumberCryptogram extends Cryptogram<Integer> {
 
     public NumberCryptogram(HashMap<Integer, Character> cryptogramAlphabet,
                             HashMap<Character, Integer> encryptionKey,
+                            String phrase,
                             Integer[] encrypted) {
 
         this.cryptogramAlphabet = cryptogramAlphabet;
         this.encryptionKey = encryptionKey;
+        this.phrase = phrase;
         this.encrypted = encrypted;
     }
 

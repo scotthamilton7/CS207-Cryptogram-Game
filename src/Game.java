@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,34 +55,58 @@ public class Game {
 
     // Method to enter a guessed letter for an encrypted character
     public void enterLetter(Object encryptedChar, char guessedChar) { 
-        try {
-            if (Character.isLetter((Character) encryptedChar)) {
-                encryptedChar = Character.toUpperCase((Character)encryptedChar);//Converts encrypted character to uppercase to match with guess
-            }
-            if (Character.isLetter(guessedChar)) {
-                guessedChar = Character.toUpperCase(guessedChar);//Converts guessed character to uppercase to match with encrypted char
-            }
+        if (playergameMapping.containsKey(encryptedChar)) {
+            System.out.println("Already guessed letter");
         }
-        catch (Exception e) {
-            // Integer passed in
+        else {
+            try {
+                if (Character.isLetter((Character) encryptedChar)) {
+                    encryptedChar = Character.toUpperCase((Character)encryptedChar);//Converts encrypted character to uppercase to match with guess
+                }
+                if (Character.isLetter(guessedChar)) {
+                    guessedChar = Character.toUpperCase(guessedChar);//Converts guessed character to uppercase to match with encrypted char
+                }
+            }
+            catch (Exception e) {
+                // Integer passed in
+            }
+
+            //Maps encrypted char to guessed char
+            playergameMapping.put(encryptedChar, guessedChar);
+
+            // Increment guesses made
+            currentPlayer.incrementTotalGuesses();
+
+            // Save game
+            saveGame();
         }
-
-        //Maps encrypted char to guessed char
-        playergameMapping.put(encryptedChar, guessedChar);
-
-        // Increment guesses made
-        currentPlayer.incrementTotalGuesses();
     }
 
     // Method to undo guessed letter for specified encrypted char
     public void undoLetter(char encryptedChar) {
-        encryptedChar = Character.toUpperCase(encryptedChar);
-        playergameMapping.remove(encryptedChar);
+        if (playergameMapping.containsKey(encryptedChar)) {
+            encryptedChar = Character.toUpperCase(encryptedChar);
+            playergameMapping.remove(encryptedChar);
+
+            // Save game
+            saveGame();
+        }
+        else {
+            System.out.println("Invalid letter");
+        }
     }
 
     // method overload to handle int input
     public void undoLetter(int encryptedChar) {
-        playergameMapping.remove(encryptedChar);
+        if (playergameMapping.containsKey(encryptedChar)) {
+            playergameMapping.remove(encryptedChar);
+
+            // Save game
+            saveGame();
+        }
+        else {
+            System.out.println("Invalid letter");
+        }
     }
 
     // should probably be changed to return the solution when the UI is setup
@@ -149,20 +174,39 @@ public class Game {
     // "{username};{type};{plainPhrase};{encryptedPhrase};{[encryptedLetter-guessedLetter,...]};{[encryptedLetter-plainLetter,...]}"
     public void saveGame() {
         try {
+            // Read existing lines
+            List<String> lines = new ArrayList<>();
+            try {
+                lines = Files.readAllLines(Path.of(gameDataFile));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             FileWriter fw = new FileWriter(gameDataFile);
             //clearPlayerData();
+
+            // Save existing lines
+            for (String line : lines) {
+                if (line.startsWith(currentPlayer.getUsername())) continue;
+                fw.write(line + "\n");
+            }
 
             fw.write(currentPlayer.getUsername() + ";");
             fw.write(cryptType + ";");
             fw.write(currentCryptogram.getPhrase() + ";");
+            fw.write(currentCryptogram.getEncryptedPhrase() + ";");
             // Write mapping of encrypted-plain guesses
             for (var entry : playergameMapping.entrySet()) {
                 fw.write(entry.getKey().toString() + "-" + entry.getValue().toString() + ",");
             }
+            fw.write(";");
             // Write current cryptogram alphabet
             for (var entry : currentCryptogram.cryptogramAlphabet.entrySet()) {
                 fw.write(entry.getKey().toString() + "-" + entry.getValue().toString() + ",");
             }
+
+            fw.write(",\n");
+            fw.close();
         } catch (IOException e) {
             // Print error message if write operation fails
             System.out.println("Error saving game data: " + e.getMessage());
@@ -218,7 +262,7 @@ public class Game {
                         encryptedAsArray[i] = Character.toUpperCase(encryptedPhrase.charAt(i));
                     }
 
-                    currentCryptogram = new LetterCryptogram(tempAlphabet, tempEncryptionKey, encryptedAsArray);
+                    currentCryptogram = new LetterCryptogram(tempAlphabet, tempEncryptionKey, plainPhrase, encryptedAsArray);
                 }
 
                 else if (cryptType.equals("Number")) {
@@ -236,7 +280,7 @@ public class Game {
                         encryptedAsArray[i] = Integer.parseInt(String.valueOf(Character.toUpperCase(encryptedPhrase.charAt(i))));
                     }
 
-                    currentCryptogram = new NumberCryptogram(tempAlphabet, tempEncryptionKey, encryptedAsArray);
+                    currentCryptogram = new NumberCryptogram(tempAlphabet, tempEncryptionKey, plainPhrase, encryptedAsArray);
                 }
 
                 else {
