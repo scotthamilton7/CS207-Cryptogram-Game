@@ -1,9 +1,11 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 public class LetterCryptogram extends Cryptogram<Character> {
 
+    // Standard constructor to create new game
     public LetterCryptogram(String file) {
         cryptogramAlphabet = new HashMap<>();
         encryptionKey = new HashMap<>();
@@ -13,6 +15,16 @@ public class LetterCryptogram extends Cryptogram<Character> {
 
         encrypted = new Character[phrase.length()];
         encryptPhrase();
+    }
+
+    // Overloaded constructor to restore game
+    public LetterCryptogram(HashMap<Character, Character> cryptogramAlphabet,
+                            HashMap<Character, Character> encryptionKey,
+                            Character[] encrypted) {
+
+        this.cryptogramAlphabet = cryptogramAlphabet;
+        this.encryptionKey = encryptionKey;
+        this.encrypted = encrypted;
     }
 
     @Override

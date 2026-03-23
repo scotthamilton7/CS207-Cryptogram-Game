@@ -15,6 +15,15 @@ public class NumberCryptogram extends Cryptogram<Integer> {
         encryptPhrase();
     }
 
+    public NumberCryptogram(HashMap<Integer, Character> cryptogramAlphabet,
+                            HashMap<Character, Integer> encryptionKey,
+                            Integer[] encrypted) {
+
+        this.cryptogramAlphabet = cryptogramAlphabet;
+        this.encryptionKey = encryptionKey;
+        this.encrypted = encrypted;
+    }
+
     @Override
     public char getPlainLetter(Integer cryptoValue) {
         return cryptogramAlphabet.get(cryptoValue);

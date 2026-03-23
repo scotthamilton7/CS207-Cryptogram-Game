@@ -28,6 +28,7 @@ public class UI extends JFrame {
 
     private void initGame() {
         game = new Game(new Player());
+        game.getCurrentPlayer().updateUsername("testPlayer"); // Also hard coded, to test game saving
         game.loadGame();
         refreshBoard(); // Refreshes board if game got loaded in, if not just refreshes blank board
 
