@@ -51,16 +51,20 @@ public class UI extends JFrame {
     private void initGame(String username) {
         try {
             game = new Game(new Player());
-            game.getCurrentPlayer().updateUsername(username); // Also hard coded, to test game saving
+            game.getCurrentPlayer().updateUsername(username);
             game.loadGame();
-            refreshBoard(); // Refreshes board if game got loaded in, if not just refreshes blank board
+            // if game loaded has already been won, force make a new game
+            if (game.hasWon()) {
+                this.game = new Game(new Player(), type);
+                game.getCurrentPlayer().updateUsername(username);
+            }
             this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
             this.encryptedTokens = new String[encrypted.length()];
         }
         catch (Exception e) {
             // Null pointer exception if game not loaded
             this.game = new Game(new Player(), type); // Hard coded for now
-            game.getCurrentPlayer().updateUsername(username); // Also hard coded, to test game saving
+            game.getCurrentPlayer().updateUsername(username);
             this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
             this.encryptedTokens = new String[encrypted.length()];
         }
@@ -241,9 +245,23 @@ public class UI extends JFrame {
     // Method to compare guesses to actual answer to check if player won and display the win message
     private void checkWin() {
         if (game.hasWon()) {
-            // displays win message
-            JOptionPane.showMessageDialog(this, "You win!");
-            game.saveGame();
+            int answer = JOptionPane.showConfirmDialog(null, "Would you like to start a new game?", "You Won!", JOptionPane.YES_NO_OPTION);
+            if (answer == JOptionPane.YES_OPTION) {
+                exitGame();
+                startGame(getUsername());
+            }
+            if (answer == JOptionPane.NO_OPTION) {
+                exitGame();
+            }
         }
+    }
+
+    private void exitGame() {
+        //gamePanel.removeAll();
+        getContentPane().remove(gamePanel);
+        gamePanel.removeAll();
+        gamePanel.revalidate();
+        gamePanel.repaint();
+        dispose();
     }
 }
