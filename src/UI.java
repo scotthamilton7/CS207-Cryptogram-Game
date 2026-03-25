@@ -19,6 +19,7 @@ public class UI extends JFrame {
     private String type = "Letter";
 
     public UI() {
+        /**
         initGame();
         buildFrame();
         buildEncryptedRow();
@@ -27,21 +28,39 @@ public class UI extends JFrame {
 
         setVisible(true);
         refreshBoard();
+         **/
     }
 
-    private void initGame() {
+    public void startGame(String username) {
+        initGame(username);
+        buildFrame();
+        buildEncryptedRow();
+        buildGuessRow();
+        addListeners();
+        setVisible(true);
+
+        refreshBoard();
+    }
+
+    public String getUsername() {
+        JOptionPane box = new JOptionPane();
+        //box.createDialog("Please enter your username");
+        return box.showInputDialog("Enter your username");
+    }
+
+    private void initGame(String username) {
         try {
             game = new Game(new Player());
-            game.getCurrentPlayer().updateUsername("player name5"); // Also hard coded, to test game saving
+            game.getCurrentPlayer().updateUsername(username); // Also hard coded, to test game saving
             game.loadGame();
             refreshBoard(); // Refreshes board if game got loaded in, if not just refreshes blank board
             this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
             this.encryptedTokens = new String[encrypted.length()];
         }
         catch (Exception e) {
-            // Null pointer exception is game not loaded
+            // Null pointer exception if game not loaded
             this.game = new Game(new Player(), type); // Hard coded for now
-            game.getCurrentPlayer().updateUsername("player name5"); // Also hard coded, to test game saving
+            game.getCurrentPlayer().updateUsername(username); // Also hard coded, to test game saving
             this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
             this.encryptedTokens = new String[encrypted.length()];
         }
@@ -166,6 +185,7 @@ public class UI extends JFrame {
     // reloads the boxes with the updated game mapping
     public void refreshBoard() {
         if (guessFields == null) return;
+        game.saveGame();
         Map<Object, Character> guesses = game.getPlayergameMapping();
 
         if (type.equals("Number")) {
