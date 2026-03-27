@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Map;
 
 public class UI extends JFrame {
@@ -18,6 +20,9 @@ public class UI extends JFrame {
 
     private String type = "Letter";
 
+    private Players players;
+    private Player currentPlayer;
+
     public UI() {
         /**
         initGame();
@@ -29,9 +34,13 @@ public class UI extends JFrame {
         setVisible(true);
         refreshBoard();
          **/
+
+        players = new Players();
+        players.loadPlayers();
     }
 
     public void startGame(String username) {
+        initPlayer(username);
         initGame(username);
         buildFrame();
         buildEncryptedRow();
@@ -48,14 +57,23 @@ public class UI extends JFrame {
         return box.showInputDialog("Enter your username");
     }
 
+    private void initPlayer(String username) {
+        currentPlayer = players.findPlayer(username);
+        if (currentPlayer == null) {
+            currentPlayer = new Player();
+            currentPlayer.updateUsername(username);
+            players.addPlayer(currentPlayer);
+        }
+    }
+
     private void initGame(String username) {
         try {
-            game = new Game(new Player());
+            game = new Game(currentPlayer);
             game.getCurrentPlayer().updateUsername(username);
             game.loadGame();
             // if game loaded has already been won, force make a new game
             if (game.hasWon()) {
-                this.game = new Game(new Player(), type);
+                this.game = new Game(currentPlayer, type);
                 game.getCurrentPlayer().updateUsername(username);
             }
             this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
@@ -63,7 +81,7 @@ public class UI extends JFrame {
         }
         catch (Exception e) {
             // Null pointer exception if game not loaded
-            this.game = new Game(new Player(), type); // Hard coded for now
+            this.game = new Game(currentPlayer, type); // Hard coded for now
             game.getCurrentPlayer().updateUsername(username);
             this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
             this.encryptedTokens = new String[encrypted.length()];
@@ -146,6 +164,13 @@ public class UI extends JFrame {
 
     // adds listeners
     private void addListeners() {
+        // adds a listener that lets us do things when the window closes
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                players.savePlayers();
+            }
+        });
+
         for (int i = 0; i < guessFields.length; i++) {
 
             int index = i; // inner method cant access i normally

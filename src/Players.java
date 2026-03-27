@@ -80,10 +80,18 @@ public class Players {
         }
     }
 
-    // Unsure if this should return the Player (which seems pointless?) or return boolean if the player is in the saved data
     public Player findPlayer(Player p) {
         for (Player player : allPlayers) {
             if (player == p) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    public Player findPlayer(String username) {
+        for (Player player : allPlayers) {
+            if (player.getUsername().equals(username)) {
                 return player;
             }
         }
