@@ -75,7 +75,7 @@ public class UI extends JFrame {
             game.getCurrentPlayer().updateUsername(username);
             game.loadGame();
             // if game loaded has already been won, force make a new game
-            if (game.hasWon()) {
+            if (game.checkWinOnLoad()) {
                 this.game = new Game(currentPlayer, type);
                 game.getCurrentPlayer().updateUsername(username);
             }
@@ -332,7 +332,7 @@ public class UI extends JFrame {
 
     // Method to compare guesses to actual answer to check if player won and display the win message
     private void checkWin() {
-        if (game.hasWon()) {
+        if (game.checkWin()) {
             int answer = JOptionPane.showConfirmDialog(null, "Would you like to start a new game?", "You Won!", JOptionPane.YES_NO_OPTION);
             if (answer == JOptionPane.YES_OPTION) {
                 exitGame();
@@ -346,6 +346,7 @@ public class UI extends JFrame {
 
     private void exitGame() {
         //gamePanel.removeAll();
+        players.savePlayers();
         getContentPane().remove(gamePanel);
         gamePanel.removeAll();
         gamePanel.revalidate();
