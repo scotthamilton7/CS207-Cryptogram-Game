@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Map;
 
 public class UI extends JFrame {
@@ -18,26 +20,72 @@ public class UI extends JFrame {
 
     private String type = "Letter";
 
+    private Players players;
+    private Player currentPlayer;
+
     public UI() {
+        /**
         initGame();
         buildFrame();
         buildEncryptedRow();
         buildGuessRow();
         addListeners();
+
+        setVisible(true);
+        refreshBoard();
+         **/
+
+        players = new Players();
+        players.loadPlayers();
     }
 
-    private void initGame() {
-        game = new Game(new Player());
-        game.loadGame();
-        refreshBoard(); // Refreshes board if game got loaded in, if not just refreshes blank board
+    public void startGame(String username) {
+        initPlayer(username);
+        initGame(username);
+        buildFrame();
+        buildEncryptedRow();
+        buildGuessRow();
+        addListeners();
+        setVisible(true);
 
-        // now only makes a new game if one wasnt loaded
-        if (game == null) {
-            this.game = new Game(new Player(), type); // Hard coded for now
-            game.getCurrentPlayer().updateUsername("testPlayer"); // Also hard coded, to test game saving
+        refreshBoard();
+    }
+
+    public String getUsername() {
+        JOptionPane box = new JOptionPane();
+        //box.createDialog("Please enter your username");
+        return box.showInputDialog("Enter your username");
+    }
+
+    private void initPlayer(String username) {
+        currentPlayer = players.findPlayer(username);
+        if (currentPlayer == null) {
+            currentPlayer = new Player();
+            currentPlayer.updateUsername(username);
+            players.addPlayer(currentPlayer);
         }
-        this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
-        this.encryptedTokens = new String[encrypted.length()];
+    }
+
+    private void initGame(String username) {
+        try {
+            game = new Game(currentPlayer);
+            game.getCurrentPlayer().updateUsername(username);
+            game.loadGame();
+            // if game loaded has already been won, force make a new game
+            if (game.hasWon()) {
+                this.game = new Game(currentPlayer, type);
+                game.getCurrentPlayer().updateUsername(username);
+            }
+            this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
+            this.encryptedTokens = new String[encrypted.length()];
+        }
+        catch (Exception e) {
+            // Null pointer exception if game not loaded
+            this.game = new Game(currentPlayer, type); // Hard coded for now
+            game.getCurrentPlayer().updateUsername(username);
+            this.encrypted = game.getCurrentCryptogram().getEncryptedPhrase();
+            this.encryptedTokens = new String[encrypted.length()];
+        }
     }
 
     private void buildFrame() {
@@ -116,6 +164,13 @@ public class UI extends JFrame {
 
     // adds listeners
     private void addListeners() {
+        // adds a listener that lets us do things when the window closes
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                players.savePlayers();
+            }
+        });
+
         for (int i = 0; i < guessFields.length; i++) {
 
             int index = i; // inner method cant access i normally
@@ -159,6 +214,7 @@ public class UI extends JFrame {
     // reloads the boxes with the updated game mapping
     public void refreshBoard() {
         if (guessFields == null) return;
+        game.saveGame();
         Map<Object, Character> guesses = game.getPlayergameMapping();
 
         if (type.equals("Number")) {
@@ -214,9 +270,23 @@ public class UI extends JFrame {
     // Method to compare guesses to actual answer to check if player won and display the win message
     private void checkWin() {
         if (game.hasWon()) {
-            // displays win message
-            JOptionPane.showMessageDialog(this, "You win!");
-            game.saveGame();
+            int answer = JOptionPane.showConfirmDialog(null, "Would you like to start a new game?", "You Won!", JOptionPane.YES_NO_OPTION);
+            if (answer == JOptionPane.YES_OPTION) {
+                exitGame();
+                startGame(getUsername());
+            }
+            if (answer == JOptionPane.NO_OPTION) {
+                exitGame();
+            }
         }
+    }
+
+    private void exitGame() {
+        //gamePanel.removeAll();
+        getContentPane().remove(gamePanel);
+        gamePanel.removeAll();
+        gamePanel.revalidate();
+        gamePanel.repaint();
+        dispose();
     }
 }

@@ -191,7 +191,7 @@ class JunitTests {
                     Map<Object, Character> mapping = numberGame.getPlayergameMapping();
                     assertEquals('A', mapping.get(encryptedNum));
                     break;
-                } catch (NumberFormatException _) {
+                } catch (NumberFormatException e) {
                 }
             }
         }
@@ -225,7 +225,7 @@ class JunitTests {
                     numberGame.undoLetter(encryptedNum);
                     assertNull(numberGame.getPlayergameMapping().get(encryptedNum));
                     break;
-                } catch (NumberFormatException _) {
+                } catch (NumberFormatException e) {
                 }
             }
         }
