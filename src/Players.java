@@ -37,6 +37,7 @@ public class Players {
 
             // Making each players data as a CSV line for file
             for (Player p : allPlayers) {
+                p.updateAccuracy();
                 fw.write(p.getUsername() + "," + p.getAccuracy() + "," + p.getTotalGuesses() + "," + p.getNumCryptogramsPlayed() + "," + p.getNumCryptogramsCompleted());
                 fw.write("\n");
             }

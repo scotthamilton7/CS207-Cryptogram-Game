@@ -17,6 +17,7 @@ public class UI extends JFrame {
     private JPanel gamePanel; // Combined Panel for the whole game
     private JPanel guessRow; // Panel for guess boxes
     private JPanel encryptedRow; // Panel for encrypted characters
+    private JPanel freqRow; // Panel for the frequencies of characters
 
     private String type = "Letter";
 
@@ -45,6 +46,7 @@ public class UI extends JFrame {
         buildFrame();
         buildEncryptedRow();
         buildGuessRow();
+        buildFreqRow();
         buildActionsRow();
         addListeners();
         setVisible(true);
@@ -73,7 +75,7 @@ public class UI extends JFrame {
             game.getCurrentPlayer().updateUsername(username);
             game.loadGame();
             // if game loaded has already been won, force make a new game
-            if (game.hasWon()) {
+            if (game.checkWinOnLoad()) {
                 this.game = new Game(currentPlayer, type);
                 game.getCurrentPlayer().updateUsername(username);
             }
@@ -91,7 +93,7 @@ public class UI extends JFrame {
 
     private void buildFrame() {
         setTitle("Cryptogram Game");
-        setSize(800, 800);
+        setSize(800, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setLayout(new BorderLayout());
@@ -99,7 +101,14 @@ public class UI extends JFrame {
         gamePanel = new JPanel();
         // this puts the encryption above the guesses
         gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.Y_AXIS));
-        add(gamePanel, BorderLayout.CENTER);
+        //add(gamePanel, BorderLayout.CENTER);
+
+        // Adds wrapper with diffrent formatting for game panel, removes weird spacing
+//        JPanel wrapper = new JPanel();
+//        wrapper.setLayout(new FlowLayout((FlowLayout.CENTER)));
+//        wrapper.add(gamePanel);
+
+        add(gamePanel);
     }
 
     // Displays encrypted characters 1 by 1
@@ -161,6 +170,39 @@ public class UI extends JFrame {
         }
 
         gamePanel.add(guessRow);
+    }
+
+    private void buildFreqRow() {
+        freqRow = new JPanel();
+        Map<Object, Integer> freqs = game.getCurrentCryptogram().getFrequencies();
+
+        if (type.equals("Letter")) {
+            for (char c : encrypted.toCharArray()) {
+                if (c == ' ') {
+                    JLabel label = new JLabel(" ");
+                    freqRow.add(label);
+                }
+                Integer freq = freqs.get(c);
+                if (freq != null) {
+                    JLabel label = new JLabel(freq.toString());
+                    freqRow.add(label);
+                }
+            }
+        }
+
+        if (type.equals("Number")) {
+            for (String x : encrypted.split(" ")) {
+                if (x.equals("")) continue;
+
+                Integer key = Integer.parseInt(x);
+                Integer freq = freqs.get(key);
+                if (freq != null) {
+                    JLabel label = new JLabel(freq.toString());
+                    freqRow.add(label);
+                }
+            }
+        }
+        gamePanel.add(freqRow);
     }
 
     private void buildActionsRow() {
@@ -290,7 +332,7 @@ public class UI extends JFrame {
 
     // Method to compare guesses to actual answer to check if player won and display the win message
     private void checkWin() {
-        if (game.hasWon()) {
+        if (game.checkWin()) {
             int answer = JOptionPane.showConfirmDialog(null, "Would you like to start a new game?", "You Won!", JOptionPane.YES_NO_OPTION);
             if (answer == JOptionPane.YES_OPTION) {
                 exitGame();
@@ -304,6 +346,7 @@ public class UI extends JFrame {
 
     private void exitGame() {
         //gamePanel.removeAll();
+        players.savePlayers();
         getContentPane().remove(gamePanel);
         gamePanel.removeAll();
         gamePanel.revalidate();
