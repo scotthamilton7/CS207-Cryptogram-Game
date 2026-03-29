@@ -93,7 +93,7 @@ public class UI extends JFrame {
 
     private void buildFrame() {
         setTitle("Cryptogram Game");
-        setSize(800, 800);
+        setSize(800, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setLayout(new BorderLayout());
@@ -104,11 +104,11 @@ public class UI extends JFrame {
         //add(gamePanel, BorderLayout.CENTER);
 
         // Adds wrapper with diffrent formatting for game panel, removes weird spacing
-        JPanel wrapper = new JPanel();
-        wrapper.setLayout(new FlowLayout((FlowLayout.CENTER)));
-        wrapper.add(gamePanel);
+//        JPanel wrapper = new JPanel();
+//        wrapper.setLayout(new FlowLayout((FlowLayout.CENTER)));
+//        wrapper.add(gamePanel);
 
-        add(wrapper);
+        add(gamePanel);
     }
 
     // Displays encrypted characters 1 by 1
