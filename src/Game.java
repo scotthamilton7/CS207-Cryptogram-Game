@@ -291,6 +291,8 @@ public class Game {
         }
     }
 
+    private boolean winAccounted = false;
+
     public boolean hasWon() {
         String SolutionPhrase = getCurrentCryptogram().getPhrase(); // Stores unencrypted phrase
         String EncryptedPhrase = getCurrentCryptogram().getEncryptedPhrase(); // Stores encrypted phrase
@@ -345,8 +347,21 @@ public class Game {
         }
 
         // Player has won
-        currentPlayer.incrementCryptogramsCompleted();
         return true;
+    }
+
+    public boolean checkWin() {
+        boolean hasWon = hasWon();
+        if (!winAccounted && hasWon) {
+            winAccounted = true;
+            currentPlayer.incrementCryptogramsCompleted();
+        }
+        return hasWon;
+    }
+
+    public boolean checkWinOnLoad() {
+        // Don't increment stats
+        return hasWon();
     }
 
     public void revealSolution() {

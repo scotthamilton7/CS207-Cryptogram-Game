@@ -75,7 +75,7 @@ public class UI extends JFrame {
             game.getCurrentPlayer().updateUsername(username);
             game.loadGame();
             // if game loaded has already been won, force make a new game
-            if (game.hasWon()) {
+            if (game.checkWinOnLoad()) {
                 this.game = new Game(currentPlayer, type);
                 game.getCurrentPlayer().updateUsername(username);
             }
@@ -93,7 +93,7 @@ public class UI extends JFrame {
 
     private void buildFrame() {
         setTitle("Cryptogram Game");
-        setSize(800, 800);
+        setSize(800, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setLayout(new BorderLayout());
@@ -104,11 +104,11 @@ public class UI extends JFrame {
         //add(gamePanel, BorderLayout.CENTER);
 
         // Adds wrapper with diffrent formatting for game panel, removes weird spacing
-        JPanel wrapper = new JPanel();
-        wrapper.setLayout(new FlowLayout((FlowLayout.CENTER)));
-        wrapper.add(gamePanel);
+//        JPanel wrapper = new JPanel();
+//        wrapper.setLayout(new FlowLayout((FlowLayout.CENTER)));
+//        wrapper.add(gamePanel);
 
-        add(wrapper);
+        add(gamePanel);
     }
 
     // Displays encrypted characters 1 by 1
@@ -332,7 +332,7 @@ public class UI extends JFrame {
 
     // Method to compare guesses to actual answer to check if player won and display the win message
     private void checkWin() {
-        if (game.hasWon()) {
+        if (game.checkWin()) {
             int answer = JOptionPane.showConfirmDialog(null, "Would you like to start a new game?", "You Won!", JOptionPane.YES_NO_OPTION);
             if (answer == JOptionPane.YES_OPTION) {
                 exitGame();
@@ -346,6 +346,7 @@ public class UI extends JFrame {
 
     private void exitGame() {
         //gamePanel.removeAll();
+        players.savePlayers();
         getContentPane().remove(gamePanel);
         gamePanel.removeAll();
         gamePanel.revalidate();
