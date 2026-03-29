@@ -45,6 +45,7 @@ public class UI extends JFrame {
         buildFrame();
         buildEncryptedRow();
         buildGuessRow();
+        buildActionsRow();
         addListeners();
         setVisible(true);
 
@@ -160,6 +161,26 @@ public class UI extends JFrame {
         }
 
         gamePanel.add(guessRow);
+    }
+
+    private void buildActionsRow() {
+        JPanel actionsPanel = new JPanel();
+
+        JButton btnShowSolution = new JButton("Show Solution");
+        btnShowSolution.addActionListener(e -> {
+            game.revealSolution();
+            refreshBoard();
+        });
+
+        JButton btnGetHint = new JButton("Get Hint");
+        btnGetHint.addActionListener(e -> {
+            game.getHint();
+            refreshBoard();
+        });
+
+        actionsPanel.add(btnShowSolution);
+        actionsPanel.add(btnGetHint);
+        gamePanel.add(actionsPanel, BorderLayout.SOUTH);
     }
 
     // adds listeners
