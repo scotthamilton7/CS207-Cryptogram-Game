@@ -349,5 +349,48 @@ public class Game {
         return true;
     }
 
+    public void revealSolution() {
+        // Clear any guesses made in case they are incorrect
+        playergameMapping.clear();
+
+        if (currentCryptogram.cryptogramAlphabet != null) {
+            playergameMapping.putAll(currentCryptogram.cryptogramAlphabet);
+        }
+
+        // Save current game state
+        saveGame();
+
+        // Remove win from player as they did not actually complete it
+        currentPlayer.decrementCryptogramsCompleted();
+    }
+
+    public void getHint() {
+        String encryptedPhrase = currentCryptogram.getEncryptedPhrase();
+
+        List<Object> validHintKeys = new ArrayList<>();
+
+        for (Object key : currentCryptogram.cryptogramAlphabet.keySet()) {
+            String keyString = key.toString();
+
+            if (encryptedPhrase.contains(keyString) && !playergameMapping.containsKey(key)) {
+                validHintKeys.add(key);
+            }
+        }
+
+        if (validHintKeys.isEmpty()) {
+            JOptionPane.showMessageDialog(null,
+                    "Error displaying hint. You may have already guessed every letter!");
+            return;
+        }
+
+        int randomIndex = (int) (Math.random() * validHintKeys.size());
+        Object hintKey = validHintKeys.get(randomIndex);
+        Character correctChar = (Character) currentCryptogram.cryptogramAlphabet.get(hintKey);
+
+        playergameMapping.put(hintKey, correctChar);
+
+        saveGame();
+    }
+
 
 }

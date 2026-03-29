@@ -23,6 +23,8 @@ public class Player {
 
     public void incrementCryptogramsCompleted(){ this.cryptogramsCompleted++; }
 
+    public void decrementCryptogramsCompleted(){ this.cryptogramsCompleted--; }
+
     public void incrementTotalGuesses(){ this.totalGuesses++; }
 
     public String getUsername() { return username; }
