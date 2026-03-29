@@ -17,6 +17,7 @@ public class UI extends JFrame {
     private JPanel gamePanel; // Combined Panel for the whole game
     private JPanel guessRow; // Panel for guess boxes
     private JPanel encryptedRow; // Panel for encrypted characters
+    private JPanel freqRow; // Panel for the frequencies of characters
 
     private String type = "Letter";
 
@@ -45,6 +46,7 @@ public class UI extends JFrame {
         buildFrame();
         buildEncryptedRow();
         buildGuessRow();
+        buildFreqRow();
         buildActionsRow();
         addListeners();
         setVisible(true);
@@ -99,7 +101,14 @@ public class UI extends JFrame {
         gamePanel = new JPanel();
         // this puts the encryption above the guesses
         gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.Y_AXIS));
-        add(gamePanel, BorderLayout.CENTER);
+        //add(gamePanel, BorderLayout.CENTER);
+
+        // Adds wrapper with diffrent formatting for game panel, removes weird spacing
+        JPanel wrapper = new JPanel();
+        wrapper.setLayout(new FlowLayout((FlowLayout.CENTER)));
+        wrapper.add(gamePanel);
+
+        add(wrapper);
     }
 
     // Displays encrypted characters 1 by 1
@@ -161,6 +170,39 @@ public class UI extends JFrame {
         }
 
         gamePanel.add(guessRow);
+    }
+
+    private void buildFreqRow() {
+        freqRow = new JPanel();
+        Map<Object, Integer> freqs = game.getCurrentCryptogram().getFrequencies();
+
+        if (type.equals("Letter")) {
+            for (char c : encrypted.toCharArray()) {
+                if (c == ' ') {
+                    JLabel label = new JLabel(" ");
+                    freqRow.add(label);
+                }
+                Integer freq = freqs.get(c);
+                if (freq != null) {
+                    JLabel label = new JLabel(freq.toString());
+                    freqRow.add(label);
+                }
+            }
+        }
+
+        if (type.equals("Number")) {
+            for (String x : encrypted.split(" ")) {
+                if (x.equals("")) continue;
+
+                Integer key = Integer.parseInt(x);
+                Integer freq = freqs.get(key);
+                if (freq != null) {
+                    JLabel label = new JLabel(freq.toString());
+                    freqRow.add(label);
+                }
+            }
+        }
+        gamePanel.add(freqRow);
     }
 
     private void buildActionsRow() {
