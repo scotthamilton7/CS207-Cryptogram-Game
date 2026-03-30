@@ -4,6 +4,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class UI extends JFrame {
@@ -41,6 +43,11 @@ public class UI extends JFrame {
     }
 
     public void startGame(String username) {
+        if (username == null || username.isEmpty()) {
+            System.out.println("Critical Error: Username is null or empty");
+            System.exit(0);
+        }
+
         initPlayer(username);
         initGame(username);
         buildFrame();
@@ -49,6 +56,8 @@ public class UI extends JFrame {
         buildFreqRow();
         buildActionsRow();
         addListeners();
+
+        setLocationRelativeTo(null);
         setVisible(true);
 
         refreshBoard();
@@ -220,8 +229,23 @@ public class UI extends JFrame {
             refreshBoard();
         });
 
+        JButton btnLeaderboard = new JButton("Leaderboard");
+        btnLeaderboard.addActionListener(e -> {
+            Leaderboard lb = new Leaderboard(this, this);
+        });
+
+        JButton btnChangeUser =  new JButton("Change User");
+        btnChangeUser.addActionListener(e -> {
+            game.saveGame();
+            players.savePlayers();
+            exitGame();
+            startGame(getUsername());
+        });
+
         actionsPanel.add(btnShowSolution);
         actionsPanel.add(btnGetHint);
+        actionsPanel.add(btnLeaderboard);
+        actionsPanel.add(btnChangeUser);
         gamePanel.add(actionsPanel, BorderLayout.SOUTH);
     }
 
@@ -352,5 +376,9 @@ public class UI extends JFrame {
         gamePanel.revalidate();
         gamePanel.repaint();
         dispose();
+    }
+
+    public List<Player> getPlayers() {
+        return players.getPlayers();
     }
 }
