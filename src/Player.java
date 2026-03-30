@@ -18,7 +18,7 @@ public class Player {
     public void updateUsername(String username) { this.username = username; }
     // This will have the accuracy calculation
     public void updateAccuracy() {
-        this.accuracy = ((double) cryptogramsCompleted /  cryptogramsPlayed) * 100;
+        this.accuracy = Math.round(((double) cryptogramsCompleted /  cryptogramsPlayed) * 100);
     }
 
     public void incrementCryptogramsPlayed(){ this.cryptogramsPlayed++; }

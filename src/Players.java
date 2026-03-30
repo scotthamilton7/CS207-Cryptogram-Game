@@ -13,6 +13,8 @@ public class Players {
     // Method to add new player
     public void addPlayer(Player p) { allPlayers.add(p); }
 
+    public List<Player> getPlayers(){ return allPlayers; }
+
     // Method to clear player data 
     public void clearPlayerData() {
         try {
