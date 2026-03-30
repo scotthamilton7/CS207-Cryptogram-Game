@@ -48,6 +48,25 @@ public class UI extends JFrame {
             System.exit(0);
         }
 
+        String[] options = new String[] {"Letter", "Number"};
+        int response = -1;
+        response = JOptionPane.showOptionDialog(null, "Select cryptogram type", "Title",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, options, options[0]);
+
+        if (response == 0) {
+            // Letter
+            type = "Letter";
+        }
+        else if (response == 1) {
+            // Number
+            type = "Number";
+        }
+        else {
+            // Exit
+            System.exit(0);
+        }
+
         initPlayer(username);
         initGame(username);
         buildFrame();
